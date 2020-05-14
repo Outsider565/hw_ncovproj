@@ -31,7 +31,7 @@ class Gui:
         # 数据设置
         self.data_new, self.data_accum, self.data_now = get_data()
         # 界面的设置
-        master.geometry('600x800')
+        master.geometry('700x800')
         master.config(bg='#F0F0F0')
         master.title("疫情数据展示")
         # 标题的设置
@@ -42,7 +42,7 @@ class Gui:
                            text="        疫情数据展示",
                            bg='#F0F0F0',
                            fg='blue',
-                           font=(self.my_font, 50, 'bold'),
+                           font=(self.my_font, 40, 'bold'),
                            height=0,
                            width=15
                            )
