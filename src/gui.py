@@ -8,7 +8,9 @@ import matplotlib.ticker as ticker
 from . import dataGetter
 from tkinter import ttk
 from tkinter.messagebox import *
+import tkinter.filedialog
 from .data import Data
+import sys
 
 
 def get_data(offline=True):
@@ -17,21 +19,25 @@ def get_data(offline=True):
 
 class Gui:
     """ GUI类，控制交互
-    :Attributes:
-        title: 最上面的标题
-        help_text: 打开我的项目github
-        data_new: 新增病例的数据
-        data_accum: 累计病例的数据
-        data_now: 现有病例的数据
     """
-    my_font = fm.FontProperties(fname="./font/wqy-microhei.ttc")
 
     def __init__(self, master):
         self.master = master
+        # 这一部分是进行跨平台优化
+        self.plt_font = fm.FontProperties(fname="./font/wqy-microhei.ttc")
+        if sys.platform == 'darwin':
+            self.size = "600x700"
+            self.title_font = ("PingFang SC", 40, 'bold')
+            self.ctrl_font = ("PingFang SC", 14)
+            self.info_font = ("PingFang SC", 15)
+            self.help_font = ("PingFang SC", 13)
+            self.plt_dpi=120
+            self.plt_height=2.9
+
         # 数据设置
         self.data_new, self.data_accum, self.data_now = get_data()
         # 界面的设置
-        master.geometry('700x800')
+        master.geometry(self.size)
         master.config(bg='#F0F0F0')
         master.title("疫情数据展示")
         # 标题的设置
@@ -42,7 +48,7 @@ class Gui:
                            text="        疫情数据展示",
                            bg='#F0F0F0',
                            fg='blue',
-                           font=(self.my_font, 40, 'bold'),
+                           font=self.title_font,
                            height=0,
                            width=15
                            )
@@ -55,8 +61,8 @@ class Gui:
             self.start.config(value=self.data_now.get_date())
             self.end.config(value=self.data_now.get_date())
 
-        get_data_button = Button(self.title_Frame, font=(
-            self.my_font, 15), text="重新获取数据", command=update_data)
+        get_data_button = Button(
+            self.title_Frame, font=self.ctrl_font, text="重新获取数据", command=update_data)
         get_data_button.pack(side=LEFT)
         # 勾选框的设置
         self.choice = {'new': IntVar(
@@ -65,17 +71,14 @@ class Gui:
         self.checker_frame = Frame(master, width=20)
         self.checker_frame.pack(fill=X)
         self.checker_frame.config(bg='#F0F0F0')
-        self.c_new = Checkbutton(self.checker_frame, text='新增人数', font=(
-            self.my_font, 13),
-            width=21, variable=self.choice['new'], command=self.re_plot)
+        self.c_new = Checkbutton(self.checker_frame, text='新增人数', font=self.ctrl_font,
+                                 width=21, variable=self.choice['new'], command=self.re_plot)
         self.c_new.pack(side=LEFT, expand=YES, fill=X)
-        self.c_accum = Checkbutton(self.checker_frame, text='累计人数', font=(
-            self.my_font, 13),
-            width=22, variable=self.choice['accum'], command=self.re_plot)
+        self.c_accum = Checkbutton(self.checker_frame, text='累计人数', font=self.ctrl_font,
+                                   width=22, variable=self.choice['accum'], command=self.re_plot)
         self.c_accum.pack(side=LEFT, expand=YES, fill=X)
-        self.c_now = Checkbutton(self.checker_frame, text='现有人数', font=(
-            self.my_font, 13),
-            width=22, variable=self.choice['now'], command=self.re_plot)
+        self.c_now = Checkbutton(self.checker_frame, text='现有人数', font=self.ctrl_font,
+                                 width=22, variable=self.choice['now'], command=self.re_plot)
         self.c_now.pack(side=LEFT, expand=YES, fill=X)
         # 插入matplotlib的图片
         self.canvas_frame = Frame()
@@ -117,23 +120,20 @@ class Gui:
         # 3个listbox，分别展示...的最大最小平均中位
         show_frame = Frame(master)
         show_frame.pack(fill=X)
-        self.new_case = Text(show_frame, font=(
-            self.my_font, 15), height=6, width=19)
+        self.new_case = Text(show_frame, font=self.info_font, height=6, width=19)
         self.change_text(choice='new')
         self.new_case.pack(side=LEFT)
-        self.accum_case = Text(show_frame, font=(
-            self.my_font, 15), height=6, width=20)
+        self.accum_case = Text(show_frame, font=self.info_font, height=6, width=20)
         self.change_text(choice='accum')
         self.accum_case.pack(side=LEFT)
-        self.now_case = Text(show_frame, font=(
-            self.my_font, 15), height=6, width=19)
+        self.now_case = Text(show_frame, font=self.info_font, height=6, width=19)
         self.change_text(choice='now')
         self.now_case.pack(side=LEFT)
         # 这是最下方的文字
         help_text = Label(self.master, text="因本人水平有限，有以下几点需要使用者注意:\n"
                           + "1.请尽量不要使用重新获取数据，本软件的数据来源于科研数据API，请将该API留给真正需要的人\n"
                           + "2.窗口的大小调整功能仍不是很完善，请尽量保持在原窗口大小\n"
-                          "3.欢迎发邮件到19307130251@fudan.edu.cn与我讨论", justify=LEFT, bg='#F0F0F0')
+                          "3.欢迎发邮件到19307130251@fudan.edu.cn与我讨论", font=self.help_font,justify=LEFT, bg='#F0F0F0')
         help_text.pack(side=TOP)
 
     def change_text(self, choice):
@@ -180,12 +180,11 @@ class Gui:
         返回所用的均为fig_file, 但实际绘图的是fig_file的子图
         :param end: 结束
         :param start: 开始
-        :param self:
         :param choice: 选项
         :param original: 原来的canvas,方便删除
         :return: 被封装好的tk图片
         """
-        fig_file = plt.Figure(figsize=(6, 3), dpi=120)
+        fig_file = plt.Figure(figsize=(6.4, self.plt_height), dpi=self.plt_dpi)
         fig = fig_file.add_subplot(111)
         legend = []
         if choice['log'].get():
@@ -199,8 +198,8 @@ class Gui:
         if choice['now'].get():
             self.data_now.plot(fig, start, end)
             legend.append("现有病例")
-        fig.legend(legend, prop=self.my_font, loc='upper left')
-        if self.data_now.length > 6:
+        fig.legend(legend, prop=self.plt_font, loc='upper left')
+        if self.data_now.get_index(end)-self.data_now.get_index(start) > 6:
             fig.xaxis.set_major_locator(
                 ticker.MultipleLocator((self.data_now.get_index(end)-self.data_now.get_index(start)) // 6))  # 设置X轴的刻度
             fig.xaxis.set_minor_locator(ticker.MultipleLocator(1))
@@ -209,4 +208,3 @@ class Gui:
         else:
             original.destroy()
             return FigureCanvasTkAgg(fig_file, self.canvas_frame).get_tk_widget()
-
