@@ -27,13 +27,22 @@ class Gui:
         self.plt_font = fm.FontProperties(fname="./font/wqy-microhei.ttc")
         if sys.platform == 'darwin':
             self.size = "600x700"
+            self.ctrl_width=21
             self.title_font = ("PingFang SC", 40, 'bold')
             self.ctrl_font = ("PingFang SC", 14)
             self.info_font = ("PingFang SC", 15)
             self.help_font = ("PingFang SC", 13)
             self.plt_dpi=120
             self.plt_height=2.9
-
+        elif sys.platform == 'win32':
+            self.size = "600x580"
+            self.ctrl_width=15
+            self.title_font = ("Microsoft YaHei UI", 30, 'bold')
+            self.ctrl_font = ("Microsoft YaHei UI", 12)
+            self.info_font = ("Microsoft YaHei UI", 13)
+            self.help_font = ("Microsoft YaHei UI", 10)
+            self.plt_dpi=100
+            self.plt_height=2.2
         # 数据设置
         self.data_new, self.data_accum, self.data_now = get_data()
         # 界面的设置
@@ -72,13 +81,13 @@ class Gui:
         self.checker_frame.pack(fill=X)
         self.checker_frame.config(bg='#F0F0F0')
         self.c_new = Checkbutton(self.checker_frame, text='新增人数', font=self.ctrl_font,
-                                 width=21, variable=self.choice['new'], command=self.re_plot)
+                                 width= self.ctrl_width, variable=self.choice['new'], command=self.re_plot)
         self.c_new.pack(side=LEFT, expand=YES, fill=X)
         self.c_accum = Checkbutton(self.checker_frame, text='累计人数', font=self.ctrl_font,
-                                   width=22, variable=self.choice['accum'], command=self.re_plot)
+                                   width= self.ctrl_width, variable=self.choice['accum'], command=self.re_plot)
         self.c_accum.pack(side=LEFT, expand=YES, fill=X)
         self.c_now = Checkbutton(self.checker_frame, text='现有人数', font=self.ctrl_font,
-                                 width=22, variable=self.choice['now'], command=self.re_plot)
+                                 width= self.ctrl_width, variable=self.choice['now'], command=self.re_plot)
         self.c_now.pack(side=LEFT, expand=YES, fill=X)
         # 插入matplotlib的图片
         self.canvas_frame = Frame()
