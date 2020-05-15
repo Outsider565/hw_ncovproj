@@ -77,4 +77,4 @@ zlib                      1.2.11               h1de35cc_3
 ## 作者和License
 
 作者: 王少文
-License: GPLv3, Apache2, 详见license文件夹
+License: GPLv3, Apache2, 详见license文件夹(主要是开源字体的要求)

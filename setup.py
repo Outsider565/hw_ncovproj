@@ -36,4 +36,5 @@ else:
 
 setup(
     name="nCov_data",
+    **extra_options
 )
