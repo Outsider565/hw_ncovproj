@@ -11,8 +11,6 @@
         python setup.py py2exe
     """
 import sys
-import ez_setup
-ez_setup.use_setuptools()
 from setuptools import setup
 
 mainscript = 'main.py'
@@ -38,4 +36,5 @@ else:
 
 setup(
     name="nCov_data",
+    **extra_options
 )
